@@ -178,10 +178,16 @@ enum weapon_type
 class entity_t;
 class base_weapon {
 public:
+	netvar(int, owner, xor ("DT_BaseViewModel"), xor ("m_hOwner"));
 	netvar(int, weapon, xor ("DT_BaseViewModel"), xor ("m_hWeapon"));
 	netvar(short, item_definition_index, xor ("DT_BaseCombatWeapon"), xor ("m_iItemDefinitionIndex"));
-	netvar(int, clip, xor ("DT_BaseCombatWeapon"), xor ("m_iClip1"));
 	netvar(int, zoom_level, xor ("DT_WeaponCSBaseGun"), xor ("m_zoomLevel"));
+	netvar(int, view_model_index, xor ("DT_BaseCombatWeapon"), xor ("m_iViewModelIndex"));
+	netvar(int, world_model_index, xor ("DT_BaseCombatWeapon"), xor ("m_iWorldModelIndex"));
+	netvar(int, world_dropped_model_index, xor ("DT_BaseCombatWeapon"), xor ("m_iWorldDroppedModelIndex"));
+	netvar(int, weapon_world_model, xor ("DT_BaseCombatWeapon"), xor ("m_iWeaponWorldModel"));
+	netvar(int, clip, xor ("DT_BaseCombatWeapon"), xor ("m_iClip1"));
+	netvar(int, primary_reserve_ammo, xor ("DT_BaseCombatWeapon"), xor ("m_iPrimaryReserveAmmoCount"));
 
 	int weapon_index = item_definition_index();
 
@@ -393,18 +399,34 @@ public:
 	static __forceinline entity_t* get_entity_by_index(int index) {
 		return static_cast<entity_t*>(csgo::entity_list->get_client_entity(index));
 	}
+	
 	const matrix3x4_t& coordinate_frame()
 	{
 		static auto _coordinate_frame = netvars.get_offset(xor ("DT_BaseEntity"), "m_CollisionGroup") - 0x30;
 		return *(matrix3x4_t*)((uintptr_t)this + _coordinate_frame);
 	}
+	
 	netvar(int32_t, team, xor ("DT_BaseEntity"), xor ("m_iTeamNum"));
 	netvar(bool, spotted, xor ("DT_BaseEntity"), xor ("m_bSpotted"));
+	netvar(vec3_t, origin, xor ("DT_BaseEntity"), xor ("m_vecOrigin"));
+	netvar(unsigned, modelIndex, xor ("DT_BaseEntity"), xor ("m_nModelIndex"));
 	netvar(int, health, xor ("DT_BasePlayer"), xor ("m_iHealth"));
 	netvar(c_handle <base_weapon>, active_weapon, xor ("DT_BaseCombatCharacter"), xor ("m_hActiveWeapon"));
+	
 	bool is_alive()
 	{
 		return health() > 0;
+	}
+
+	vec3_t GetBonePos(int i)
+	{
+		matrix3x4_t boneMatrix[MAXSTUDIOBONES];
+		if (this->setup_bones(boneMatrix, MAXSTUDIOBONES, BONE_USED_BY_HITBOX, 0.0f))
+		{
+			return vec3_t(boneMatrix[i][0][3], boneMatrix[i][1][3], boneMatrix[i][2][3]);
+		}
+
+		return vec3_t(0, 0, 0);
 	}
 };
 
@@ -413,6 +435,7 @@ public:
 	static __forceinline player_t* get_player_by_index(int index) {
 		return static_cast<player_t*>(get_entity_by_index(index));
 	}
+
 	netvar(int, health, xor ("DT_BasePlayer"), xor ("m_iHealth"));
 	netvar(int, life_state, xor ("DT_BasePlayer"), xor ("m_lifeState"));
 	netvar(bool, is_scoped, xor ("DT_BasePlayer"), xor ("m_bIsScoped"));
@@ -423,18 +446,31 @@ public:
 	netvar(int32_t, hitbox_set, xor ("DT_BaseAnimating"), xor ("m_nHitboxSet"));
 	netvar(c_handle<base_weapon>, active_weapon, xor ("DT_BaseCombatCharacter"), xor ("m_hActiveWeapon"));
 	netvar(vec3_t, view_offset, xor ("DT_BasePlayer"), xor ("m_vecViewOffset[0]"));
+	//------------------------------------------------------------------------------------------------------------------------
+	netvar(int, shots_fired, xor ("DT_CSPlayer"), xor ("m_iShotsFired"));
+	netvar(int, account_cash, xor ("DT_CSPlayer"), xor ("m_iAccount"));
+	netvar(bool, has_defuser, xor ("DT_CSPlayer"), xor ("m_bHasDefuser"));
+	netvar(vec3_t, aim_punch, xor ("DT_BasePlayer"), xor ("m_aimPunchAngle"));
+	netvar(vec3_t, vec_velocity, xor ("DT_BasePlayer"), xor ("m_secVelocity[0]"));
+	netvar(int, armor, xor ("DT_CSPlayer"), xor ("m_armorValue"));
+	netvar(char*, last_place_name, xor ("DT_BasePlayer"), xor ("m_szLastPlaceName"));
+	
+	
 	bool is_alive()
 	{
 		return health() > 0;
 	}
+
 	int move_type()
 	{
 		return *(int*)(uintptr_t(this) + 0x25C);
 	}
+
 	vec3_t eye_pos()
 	{
 		return vec_origin() + view_offset();
 	}
+
 	vec3_t get_hitbox_pos(int hitbox_id) {
 		matrix3x4_t bone_matrix[MAXSTUDIOBONES];
 		if (setup_bones(bone_matrix, MAXSTUDIOBONES, BONE_USED_BY_HITBOX, 0.0f)) {
@@ -453,6 +489,18 @@ public:
 		}
 		return vec3_t{};
 	}
+
+	vec3_t GetBonePos(int i)
+	{
+		matrix3x4_t boneMatrix[MAXSTUDIOBONES];
+		if (this->setup_bones(boneMatrix, MAXSTUDIOBONES, BONE_USED_BY_HITBOX, 0.0f))
+		{
+			return vec3_t(boneMatrix[i][0][3], boneMatrix[i][1][3], boneMatrix[i][2][3]);
+		}
+
+		return vec3_t(0, 0, 0);
+	}
+
 	void inv_bone_cache()
 	{
 		static DWORD addr = (DWORD)utils::pattern_scan(xor ("client.dll"), xor ("80 3D ? ? ? ? ? 74 16 A1 ? ? ? ? 48 C7 81"));

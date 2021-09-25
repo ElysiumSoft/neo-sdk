@@ -3,6 +3,7 @@
 #include "../../rendering/menu.h"
 #include "../../features/esp.h"
 #include "../../features/misc.h"
+#include "../../features/aimbot.h"
 
 long __stdcall hooks::end_scene::hook(IDirect3DDevice9* device) {
 	IDirect3DStateBlock9* pixel_state = NULL;

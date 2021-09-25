@@ -63,7 +63,7 @@ namespace csgo {
 	__forceinline void dump() {
         #define stringify_impl(s) #s
         #define stringify(s) stringify_impl(s)
-        #define print_interface(name) utils::console_print(xor("%-20s: %p\n"), stringify(name), name)
+        #define print_interface(name) utils::color_print(xor("%-20s: ^m0x%p^!\n"), stringify(name), name)
         print_interface(client);
 		print_interface(client_mode);
         print_interface(globals);

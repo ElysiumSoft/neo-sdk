@@ -117,6 +117,23 @@ public:
         z -= fl;
         return *this;
     }
+
+    vec3_t& operator+(float fl)
+    {
+        x += fl;
+        y += fl;
+        z += fl;
+        return *this;
+    }
+
+    vec3_t& operator-(float fl)
+    {
+        x -= fl;
+        y -= fl;
+        z -= fl;
+        return *this;
+    }
+
     void normalize_in_place()
     {
         *this = normalized();

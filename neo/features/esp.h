@@ -6,6 +6,9 @@ namespace esp {
 	public:
 		bool begin(player_t* pl);
 		void box(entity_t* ent);
+		void lines(entity_t* ent);
+		void bones(entity_t* ent);
+		void name(entity_t* ent);
 		void health(entity_t* ent);
 		void weapon(entity_t* ent);
 		void ammo(entity_t* ent);
@@ -16,4 +19,5 @@ namespace esp {
 		int top_spacing_y;
 	};
 	void draw_list();
+	void draw_crosshair();
 }

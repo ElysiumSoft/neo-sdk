@@ -46,6 +46,16 @@ namespace menu {
 
 				ImGui::Checkbox("box esp", &options::esp::box_esp); ImGui::SameLine();
 				ImGui::ColorEdit5("##box_color", &options::esp::box_color, flags_alpha);
+				ImGui::SliderFloat("box weight", &options::esp::box_weight, 0.1f, 10.0f, "%.1f");
+
+				ImGui::Checkbox("esp lines", &options::esp::lines); ImGui::SameLine();
+				ImGui::ColorEdit5("##lines_color", &options::esp::line_color, flags_alpha);
+				ImGui::SliderFloat("lines weight", &options::esp::lines_weight, 0.1f, 10.0f, "%.1f");
+
+				ImGui::SetCursorPosX(5.f);
+				ImGui::Checkbox("draw skeletons", &options::esp::bones_esp);
+				ImGui::ColorEdit5("##bones_color", &options::esp::bones_color, flags_alpha);
+				ImGui::SliderFloat("bones weight", &options::esp::bones_weight, 0.1f, 10.0f, "%.1f");
 
 				ImGui::SetCursorPosX(5.f);
 
@@ -69,6 +79,14 @@ namespace menu {
 
 				ImGui::EndTabItem();
 			}
+			if (ImGui::BeginTabItem("aimbot")) {
+				ImGui::SetCursorPosX(5.f);
+
+				ImGui::Checkbox("aimbot", &options::aim::aim_enable);
+				ImGui::Checkbox("anti recoil", &options::rcs::anti_recoil);
+
+				ImGui::EndTabItem();
+			}
 			if (ImGui::BeginTabItem("chams")) {
 				ImGui::SetCursorPosX(5.f);
 
@@ -86,6 +104,7 @@ namespace menu {
 				ImGui::SetCursorPosX(5.f);
 
 				ImGui::Checkbox("bhop", &options::move::bhop);
+
 
 				ImGui::SetCursorPosX(5.f);
 

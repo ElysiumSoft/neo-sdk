@@ -19,23 +19,26 @@
 
 #include "../imgui.h"
 #include "imgui_impl_dx9.h"
+#include "../../fonts.h";
 
 // DirectX
 #include <d3d9.h>
 #define DIRECTINPUT_VERSION 0x0800
 #include <dinput.h>
+#include "../../../csgo/utilities/utils.h"
 
 // Win32 data
-static HWND                     g_hWnd = 0;
-static INT64                    g_Time = 0;
-static INT64                    g_TicksPerSecond = 0;
+static HWND                     g_hWnd =			0;
+static INT64                    g_Time =			0;
+static INT64                    g_TicksPerSecond =	0;
 static ImGuiMouseCursor         g_LastMouseCursor = ImGuiMouseCursor_COUNT;
 
 // DirectX data
-static LPDIRECT3DDEVICE9        g_pd3dDevice = NULL;
-static LPDIRECT3DVERTEXBUFFER9  g_pVB = NULL;
-static LPDIRECT3DINDEXBUFFER9   g_pIB = NULL;
-static LPDIRECT3DTEXTURE9       g_FontTexture = NULL;
+static LPDIRECT3DDEVICE9        g_pd3dDevice =		NULL;
+static LPDIRECT3DVERTEXBUFFER9  g_pVB =				NULL;
+static LPDIRECT3DINDEXBUFFER9   g_pIB =				NULL;
+static LPDIRECT3DTEXTURE9       g_FontTexture =		NULL;
+static LPDIRECT3DTEXTURE9		g_snigFontTexture = NULL;
 static int                      g_VertexBufferSize = 5000, g_IndexBufferSize = 10000;
 
 struct CUSTOMVERTEX
@@ -377,6 +380,12 @@ bool    ImGui_ImplDX9_Init(void* hwnd, IDirect3DDevice9* device)
 
 	io.ImeWindowHandle = g_hWnd;
 
+	//io.FontDefault = io.Fonts->AddFontFromMemoryCompressedTTF(TitanOne_compressed_data, TitanOne_compressed_size, 52.f);
+	//io.FontDefault->Scale = .25f;
+
+	//ImFont* titan_one = io.Fonts->AddFontFromMemoryCompressedTTF(fonts::TitanOne_compressed_data, fonts::TitanOne_compressed_size, 16.0f);
+	//ImFont* sniglet = io.Fonts->AddFontFromMemoryCompressedTTF(fonts::Sniglet_compressed_data, fonts::Sniglet_compressed_size, 16.0f);
+
 	return true;
 }
 
@@ -414,9 +423,12 @@ static bool ImGui_ImplDX9_CreateFontsTexture()
 
 bool ImGui_ImplDX9_CreateDeviceObjects()
 {
+	utils::color_print("[^g??^!] Creating dx9 device object for rendering...");
 	if (!g_pd3dDevice)
+		utils::color_print("[^r!!!^!] DX9 devcice creation failed, ^yg_pd3dDevice^! is invalid!");
 		return false;
-	if (!ImGui_ImplDX9_CreateFontsTexture())
+		if (!ImGui_ImplDX9_CreateFontsTexture())
+			utils::color_print("[^r!!!^!] DX9 device creation failed, could not create font texture!");
 		return false;
 	return true;
 }

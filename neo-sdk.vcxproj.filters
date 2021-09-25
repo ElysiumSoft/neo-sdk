@@ -28,6 +28,10 @@
     <ClCompile Include="neo\hooks\functions\create_move.cpp" />
     <ClCompile Include="neo\hooks\hooks.cpp" />
     <ClCompile Include="neo\features\misc.cpp" />
+    <ClCompile Include="neo\rendering\fonts.h" />
+    <ClCompile Include="neo\features\aimbot.cpp" />
+    <ClCompile Include="neo\features\rcs.cpp" />
+    <ClCompile Include="neo\features\aimbotnew.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="neo\buildtype.h" />
@@ -92,5 +96,8 @@
     <ClInclude Include="neo\rendering\menu.h" />
     <ClInclude Include="neo\rendering\render.h" />
     <ClInclude Include="neo\features\misc.h" />
+    <ClInclude Include="neo\features\aimbot.h" />
+    <ClInclude Include="neo\features\rcs.h" />
+    <ClInclude Include="neo\features\aimbotnew.h" />
   </ItemGroup>
 </Project>

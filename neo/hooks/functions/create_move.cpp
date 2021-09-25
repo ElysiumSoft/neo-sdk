@@ -3,6 +3,8 @@
 #include "../../features/prediction.h"
 #include "../../features/lag_compensation.h"
 #include "../../csgo/misc/options.h"
+#include "../../features/aimbot.h"
+#include "../../features/rcs.h"
 
 bool __fastcall hooks::create_move::hook(void* thisptr, int edx, float fl_input_sample_time, c_cmd* cmd) {
 	original(thisptr, edx, fl_input_sample_time, cmd);
@@ -11,6 +13,10 @@ bool __fastcall hooks::create_move::hook(void* thisptr, int edx, float fl_input_
 
 	if (options::legit::fake_latency) fake_latency::update_sequence();
 	else fake_latency::clear_sequence();
+
+
+	aimbot::Run(cmd);
+	rcs::Run();
 
 	move::bhop(cmd);
 
