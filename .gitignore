@@ -1,4 +1,3 @@
-
 .vs/neo-sdk/v16/.suo
 *.db
 *.db-wal
@@ -14,3 +13,4 @@
 *.tlog
 *.txt
 *.idb
+Debug/*
