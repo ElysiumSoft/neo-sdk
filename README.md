@@ -1,4 +1,4 @@
-# **=\~=\~=\~=\~=\~=\~=[ ElysiumHaxx for CS:GO ]=\~=\~=\~=\~=\~=\~=**
+# **=\~=\~=\~=\~=[ ElysiumHaxx for CS:GO ]=\~=\~=\~=\~=**
 
 >   ##### Based on @HackermanX 's SDK
 
