@@ -19,7 +19,6 @@
 
 #include "../imgui.h"
 #include "imgui_impl_dx9.h"
-#include "../../fonts.h";
 
 // DirectX
 #include <d3d9.h>
@@ -27,18 +26,39 @@
 #include <dinput.h>
 #include "../../../csgo/utilities/utils.h"
 
+struct ImGui_ImplWin32_Data
+{
+	HWND hWnd;
+	INT64 Time;
+	INT64 TicksPerSecond;
+	static ImGuiMouseCursor LastMouseCursor;
+};
+
 // Win32 data
-static HWND                     g_hWnd =			0;
-static INT64                    g_Time =			0;
-static INT64                    g_TicksPerSecond =	0;
+static HWND                     g_hWnd = 0;
+static INT64                    g_Time = 0;
+static INT64                    g_TicksPerSecond = 0;
 static ImGuiMouseCursor         g_LastMouseCursor = ImGuiMouseCursor_COUNT;
 
+struct ImGui_ImplDX9_Data
+{
+	PDIRECT3DDEVICE9 pd3dDevice;
+	LPDIRECT3DVERTEXBUFFER9 pVB;
+	LPDIRECT3DINDEXBUFFER9 pIB;
+	LPDIRECT3DTEXTURE9 FontTexture;
+	int VertexBufferSize;
+	int IndexBufferSize;
+
+	ImGui_ImplDX9_Data() { memset(this, 0, sizeof(*this)); VertexBufferSize = 5000; IndexBufferSize = 10000; }
+};
+
 // DirectX data
-static LPDIRECT3DDEVICE9        g_pd3dDevice =		NULL;
-static LPDIRECT3DVERTEXBUFFER9  g_pVB =				NULL;
-static LPDIRECT3DINDEXBUFFER9   g_pIB =				NULL;
-static LPDIRECT3DTEXTURE9       g_FontTexture =		NULL;
+static LPDIRECT3DDEVICE9        g_pd3dDevice = NULL;
+static LPDIRECT3DVERTEXBUFFER9  g_pVB = NULL;
+static LPDIRECT3DINDEXBUFFER9   g_pIB = NULL;
+static LPDIRECT3DTEXTURE9       g_FontTexture = NULL;
 static LPDIRECT3DTEXTURE9		g_snigFontTexture = NULL;
+static LPDIRECT3DTEXTURE9		g_titanFontTexture = NULL;
 static int                      g_VertexBufferSize = 5000, g_IndexBufferSize = 10000;
 
 struct CUSTOMVERTEX
@@ -48,6 +68,17 @@ struct CUSTOMVERTEX
 	float    uv[2];
 };
 #define D3DFVF_CUSTOMVERTEX (D3DFVF_XYZ|D3DFVF_DIFFUSE|D3DFVF_TEX1)
+
+#ifdef IMGUI_USE_BGRA_PACKED_COLOR
+#define IMGUI_COL_TO_DX9_ARGB(_COL)	(_COL)
+#else
+#define IMGUI_COL_TO_DX9_ARGB(_COL)	(((_COL) & 0xFF00FF00) | (((_COL) & 0xFF0000) >> 16) | (((_COL) &0xFF) << 16))
+#endif
+
+static ImGui_ImplDX9_Data* ImGui_ImplDX9_GetBackendData()
+{
+	return ImGui::GetCurrentContext() ? (ImGui_ImplDX9_Data*)ImGui::GetIO().BackendRendererUserData : NULL;
+}
 
 // Render function.
 // (this used to be set in io.RenderDrawListsFn and called by ImGui::Render(), but you can now call this directly from your main loop)
@@ -88,7 +119,7 @@ void ImGui_ImplDX9_RenderDrawData(ImDrawData* draw_data, ImDrawList* draw_list)
 		return;
 	if (g_pIB->Lock(0, (UINT)(draw_data->TotalIdxCount * sizeof(ImDrawIdx)), (void**)&idx_dst, D3DLOCK_DISCARD) < 0)
 		return;
-
+	
 	if (draw_list && !draw_list->VtxBuffer.empty()) {
 		const ImDrawList* cmd_draw_list = draw_list;
 		const ImDrawVert* vtx_src_esp = cmd_draw_list->VtxBuffer.Data;
@@ -98,7 +129,7 @@ void ImGui_ImplDX9_RenderDrawData(ImDrawData* draw_data, ImDrawList* draw_list)
 			vtx_dst->pos[0] = vtx_src_esp->pos.x;
 			vtx_dst->pos[1] = vtx_src_esp->pos.y;
 			vtx_dst->pos[2] = 0.0f;
-			vtx_dst->col = (vtx_src_esp->col & 0xFF00FF00) | ((vtx_src_esp->col & 0xFF0000) >> 16) | ((vtx_src_esp->col & 0xFF) << 16);     // RGBA --> ARGB for DirectX9
+			vtx_dst->col = IMGUI_COL_TO_DX9_ARGB(vtx_src_esp->col);     // RGBA --> ARGB for DirectX9
 			vtx_dst->uv[0] = vtx_src_esp->uv.x;
 			vtx_dst->uv[1] = vtx_src_esp->uv.y;
 			vtx_dst++;
@@ -117,7 +148,7 @@ void ImGui_ImplDX9_RenderDrawData(ImDrawData* draw_data, ImDrawList* draw_list)
 			vtx_dst->pos[0] = vtx_src->pos.x;
 			vtx_dst->pos[1] = vtx_src->pos.y;
 			vtx_dst->pos[2] = 0.0f;
-			vtx_dst->col = (vtx_src->col & 0xFF00FF00) | ((vtx_src->col & 0xFF0000) >> 16) | ((vtx_src->col & 0xFF) << 16);     // RGBA --> ARGB for DirectX9
+			vtx_dst->col = IMGUI_COL_TO_DX9_ARGB(vtx_src->col);
 			vtx_dst->uv[0] = vtx_src->uv.x;
 			vtx_dst->uv[1] = vtx_src->uv.y;
 			vtx_dst++;
@@ -416,7 +447,7 @@ static bool ImGui_ImplDX9_CreateFontsTexture()
 	g_FontTexture->UnlockRect(0);
 
 	// Store our identifier
-	io.Fonts->TexID = (void*)g_FontTexture;
+	io.Fonts->TexID = (ImTextureID)g_FontTexture;
 
 	return true;
 }
@@ -425,11 +456,15 @@ bool ImGui_ImplDX9_CreateDeviceObjects()
 {
 	utils::color_print("[^g??^!] Creating dx9 device object for rendering...");
 	if (!g_pd3dDevice)
+	{
 		utils::color_print("[^r!!!^!] DX9 devcice creation failed, ^yg_pd3dDevice^! is invalid!");
 		return false;
-		if (!ImGui_ImplDX9_CreateFontsTexture())
-			utils::color_print("[^r!!!^!] DX9 device creation failed, could not create font texture!");
+	}
+	if (!ImGui_ImplDX9_CreateFontsTexture())
+	{
+		utils::color_print("[^r!!!^!] DX9 device creation failed, could not create font texture!");
 		return false;
+	}
 	return true;
 }
 
@@ -492,6 +527,8 @@ void ImGui_ImplDX9_NewFrame()
 		ClientToScreen(g_hWnd, &pos);
 		SetCursorPos(pos.x, pos.y);
 	}
+
+	
 
 	// Update OS mouse cursor with the cursor requested by imgui
 	ImGuiMouseCursor mouse_cursor = io.MouseDrawCursor ? ImGuiMouseCursor_None : ImGui::GetMouseCursor();

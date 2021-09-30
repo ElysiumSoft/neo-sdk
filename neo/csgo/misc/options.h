@@ -1,6 +1,19 @@
 #pragma once
 
 namespace options {
+	namespace status {
+		inline int aimtarget = -1;
+		inline vec3_t bestspot = vec3_t(0.f, 0.f, 0.f);
+		inline float bestfov = 99999.f;
+	}
+
+	namespace menu {
+		inline bool fontchooser = false;
+		inline bool styleeditor = false;
+		inline bool debugwin = false;
+		inline bool stylesel = false;
+	}
+
 	namespace clientinfo {
 		inline int screen_width = 1920;
 		inline int screen_height = 1080;
@@ -43,6 +56,7 @@ namespace options {
 
 	namespace aim {
 		inline bool aim_enable = false;
+		inline float smooth_multiplier = 1.f;
 	}
 
 	namespace chams {

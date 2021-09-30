@@ -5,6 +5,7 @@
 #include "../../csgo/misc/options.h"
 #include "../../features/aimbot.h"
 #include "../../features/rcs.h"
+#include "../../features/misc.h"
 
 bool __fastcall hooks::create_move::hook(void* thisptr, int edx, float fl_input_sample_time, c_cmd* cmd) {
 	original(thisptr, edx, fl_input_sample_time, cmd);
@@ -14,16 +15,19 @@ bool __fastcall hooks::create_move::hook(void* thisptr, int edx, float fl_input_
 	if (options::legit::fake_latency) fake_latency::update_sequence();
 	else fake_latency::clear_sequence();
 
-
-	aimbot::Run(cmd);
-	rcs::Run();
+	/* =~=[ UPDATE THE VIEW ANGLES VALUE FOR DEBUG DISPLAY ]=~= */
+	miscfeatures::vaCmd = cmd->view_angles;
 
 	move::bhop(cmd);
+
+	aimbot::Run(cmd);
+	rcs::Run(cmd);
 
 	g_bt.on_move(cmd);
 
 	prediction::start(g::local, cmd);
 	prediction::finish(g::local);
+
 
 	return false;
 }

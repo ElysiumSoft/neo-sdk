@@ -2,8 +2,125 @@
 #include "../csgo/misc/options.h"
 #include "../csgo/globals.h"
 #include "../csgo/sdk.h"
+#include "misc.h"
 
+#include <cstdlib>
+#include <ctime>
 #include <cmath>
+
+//std::vector<long> killTimes = { 0 };
+//
+//static bool shouldAim = false;
+//int aimbot::targetAimbot = -1;
+//
+//static vec3_t* oldAngle = new vec3_t(0.f, 0.f, 0.f);
+//static vec3_t angle = vec3_t(0.f, 0.f, 0.f);
+//
+//static bool IsInFov(const vec3_t* spot, float Fov)
+//{
+//	vec3_t pVecTarget = g::local->eye_pos();
+//
+//	if (math::GetFOV(oldAngle, math::CalcAngle(pVecTarget, *spot)) > Fov)
+//		return false;
+//
+//	return true;
+//}
+//
+//static player_t* GetClosestEnemy()
+//{
+//	float bestFov = FLT_MAX;
+//
+//	vec3_t pVecTarget = g::local->eye_pos();
+//	player_t* enemy = nullptr;
+//
+//	int maxClient = csgo::engine->GetMaxClients();
+//	for (int i = 0; i < maxClient; i++) {
+//		player_t* player = (player_t*)csgo::entity_list->get_client_entity(i);
+//
+//		if (!player || player == g::local || !player->is_alive() || player->team() == g::local->team())
+//			continue;
+//
+//		vec3_t cbVecTarget = player->eye_pos();
+//
+//		float cbFov = fabs(math::GetFOV(oldAngle, math::CalcAngle(pVecTarget, cbVecTarget)));
+//
+//		if (cbFov >= bestFov)
+//			continue;
+//
+//		utils::info_print("Aimbot: best FOV = %f", cbFov);
+//		bestFov = cbFov;
+//		enemy = player;
+//		aimbot::targetAimbot = i;
+//		options::status::aimtarget = i;
+//	}
+//
+//	return enemy;
+//}
+//
+//static void GetClosestSpot(player_t* enemy, vec3_t& BestSpot)
+//{
+//	int boneID = BONE_HEAD;
+//	vec3_t bone3D = enemy->GetBonePos(boneID);
+//	BestSpot = bone3D;
+//}
+//
+//static player_t* GetClosestPlayerAndSpot(c_cmd* cmd, vec3_t& bestSpot)
+//{
+//
+//	player_t* player = nullptr;
+//	player = GetClosestEnemy();
+//
+//	if (!player || !player->is_alive())
+//	{
+//		utils::error_print("Aimbot: Failed '!player || !player->is_alive()");
+//		return nullptr;
+//	}
+//
+//	vec3_t bone3d;
+//	GetClosestSpot(player, bestSpot);
+//
+//	return player;
+//}
+//
+//void aimbot::Run(c_cmd* cmd)
+//{
+//	miscfeatures::vaCmd = cmd->view_angles;
+//
+//	if (!(GetAsyncKeyState(VK_RBUTTON) & 0x8000))
+//		return;
+//
+//	if (!g::local->is_alive())
+//		return;
+//
+//	vec3_t bestSpot{};
+//	vec3_t localEye = g::local->eye_pos();
+//
+//	angle = cmd->view_angles;
+//	csgo::engine->GetViewAngles(oldAngle);
+//
+//	player_t* player = GetClosestPlayerAndSpot(cmd, bestSpot);
+//
+//	if (player)
+//	{
+//
+//		options::status::aimtarget = player->ent_index();
+//		options::status::bestspot = bestSpot;
+//		aimbot::targetAimbot = player->ent_index();
+//
+//		angle = math::CalcAngle(localEye, bestSpot);
+//
+//		math::AngleNormalize(angle);
+//		math::ClampAngles(angle);
+//
+//		csgo::engine->SetViewAngles(&angle);
+//	}
+//	else
+//	{
+//		utils::error_print("Aimbot failed to find a target ^y:(^!\n");
+//	}
+//
+//}
+
 namespace aimbot
 {
 
@@ -53,7 +170,7 @@ namespace aimbot
 
 	void Run(c_cmd* cmd/*, bool& bSendPacket*/)
 	{
-		if (!(GetKeyState(VK_RBUTTON) & 0x800))
+		if (!(GetKeyState(VK_RBUTTON) & 0x8000))
 			return;
 
 		if (!options::aim::aim_enable || !g::local->is_alive())
@@ -70,20 +187,19 @@ namespace aimbot
 		{
 			i_client_entity* clientEntity = csgo::entity_list->get_client_entity(i);
 
-			if (i >= csgo::globals->max_clients)
+			if(i >= csgo::globals->max_clients)
 				continue;
 
 			if (!clientEntity || clientEntity == g::local)
 				continue;
 
-			entity_t* baseEntity = clientEntity->GetBaseEntity();
+			entity_t* baseEntity = (entity_t*)clientEntity;
 			if (!baseEntity || baseEntity->team() == g::local->team())
 				continue;
 			//if (!baseEntity || baseEntity->is_dormant() || /*!baseEntity->IsPlayer() ||*/ baseEntity->team() == g::local->team())
 			//	continue;
 
 			player_t* basePlayer = (player_t*)baseEntity;
-
 			if (!basePlayer->is_alive())
 				continue;
 
@@ -93,29 +209,31 @@ namespace aimbot
 		vec3_t aimpoint = vec3_t(0,0,0);
 		float dist = 9999.0f;
 		int fovdist = 9999;
-		vec3_t curAngle{};
-		csgo::engine->GetViewAngles(&curAngle);
 		
 
 		for (AimbotData dat : data)
 		{
+			vec3_t curAngle = cmd->view_angles;
 			int w, h;
 			csgo::engine->screen_size(w, h);
-			vec3_t screencenter{};
-			screencenter.x = w * 0.5f;
-			screencenter.y = h * 0.5f;
+
+			vec3_t screenCenter = vec3_t((w * 0.5f), (h * 0.5f), 1.f);
+
 			vec3_t eye = g::local->eye_pos();
 			vec3_t point = dat.aimpoint;
-			vec3_t spoint{};
-			math::w2s(point, spoint);
 			vec3_t tempAngle = math::DirectionToAngle(aimpoint - g::local->eye_pos());
-			
-			float dst = math::Distance(screencenter, spoint);
+			math::ClampAngles(tempAngle);
+
+			vec3_t aimPointS;
+			math::w2s(dat.aimpoint, aimPointS);
+
+			float dst = math::Distance2d(screenCenter, aimPointS);
 
 			if (dst < dist)
 			{
 				dist = dst;
 				aimpoint = point;
+				options::status::bestfov = dst;
 			}
 
 
@@ -136,6 +254,7 @@ namespace aimbot
 		if (aimpoint != vec3_t(0, 0, 0))
 		{
 			vec3_t angle = math::DirectionToAngle(aimpoint - g::local->eye_pos());
+			math::ClampAngles(angle);
 			csgo::engine->SetViewAngles(&angle);
 		}
 	}

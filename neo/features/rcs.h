@@ -6,6 +6,6 @@
 namespace rcs
 {
 
-	void Run();
+	void Run(c_cmd* cmd);
 
 }

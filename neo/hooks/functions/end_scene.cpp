@@ -18,12 +18,15 @@ long __stdcall hooks::end_scene::hook(IDirect3DDevice9* device) {
 
 	ImGui_ImplDX9_NewFrame();
 
-	g::draw_list = ImGui::GetOverlayDrawList();
+	g::draw_list = ImGui::GetForegroundDrawList();
 
 	menu::render();
 	ImGui::GetStyle().AntiAliasedLines = true; //seems to look slightly better (maybe just my eyes fooling me)
+	ImGui::GetStyle().AntiAliasedFill = true;
+	ImGui::GetStyle().WindowRounding = 3.f;
 	esp::draw_list();
 	miscfeatures::watermark();
+	miscfeatures::statuses();
 	ImGui::Render();
 
 	ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());

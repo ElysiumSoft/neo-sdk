@@ -71,7 +71,7 @@ public:
 	int command_ack;
 	int m_nSoundSequence;
 	int m_last_progress_percent;
-	bool m_is_hltv;
+	//bool m_is_hltv;
 	char pad009[0x4B];
 	vec3_t viewangles;
 	char pad010[0xCC];

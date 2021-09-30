@@ -19,6 +19,7 @@ public:
     netvar_table load_table(recv_table* recv_table);
     uint32_t get_offset(const std::string& tableName, const std::string& propName);
     uint32_t get_offset(const netvar_table& table, const std::string& propName);
+    void dump();
 
     std::vector<netvar_table>  database;
 };

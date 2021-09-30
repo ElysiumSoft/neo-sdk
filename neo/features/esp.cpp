@@ -75,8 +75,8 @@ void esp::player_::bones(entity_t* ent) {
 			math::w2s(vParent, sParent);
 
 			render::draw_line(sParent[0], sParent[1], sChild[0], sChild[1], options::esp::bones_color, options::esp::bones_weight);
-			render::draw_circle(sParent[0], sParent[1], 12.f, options::esp::box_color, options::esp::bones_weight);
-			render::draw_circle(sChild[0], sChild[1], 8.f, options::esp::box_color, options::esp::bones_weight);
+			render::draw_circle(sParent[0], sParent[1], 2.f, options::esp::box_color, options::esp::bones_weight);
+			render::draw_circle(sChild[0], sChild[1], 2.f, options::esp::box_color, options::esp::bones_weight);
 		}
 	}
 }
@@ -103,7 +103,7 @@ void esp::player_::name(entity_t* ent) {
 	auto box = render::get_bounding_box(ent);
 	player_info_t pinfo;
 	csgo::engine->GetPlayerInfo(ent->ent_index(), &pinfo);
-	std::string player_name = pinfo.name;
+	std::string player_name = pinfo.name + ent->ent_index();
 
 	render::draw_text_ex(player_name, ImVec2(box.left + 5, box.bottom), options::esp::name_color, ImGui::GetFont(), 18.f);
 }

@@ -185,34 +185,26 @@ namespace math {
 
 	void VectorAngles(const vec3_t& forward, vec3_t& angles)
 	{
-		float tmp, yaw, pitch;
-
-		if (forward.y == 0 && forward.x == 0)
-		{
-			yaw = 0;
-
-			if (forward.z > 0)
-				pitch = 270;
-			else
-				pitch = 90;
+		if (forward[1] == 0.0f && forward[0] == 0.0f) {
+			angles[0] = (forward[2] > 0.0f) ? 270.0f : 90.0f; // Pitch (up/down)
+			angles[1] = 0.0f;  //yaw left/right
 		}
-		else
-		{
-			yaw = rad2deg(atan2f(forward.y, forward.x));
+		else {
+			angles[0] = atan2(-forward[2], forward.length_2d()) * -180.f / pi;
+			angles[1] = atan2(forward[1], forward[0]) * 180.f / pi;
 
-			if (yaw < 0)
-				yaw += 360;
-
-			tmp = forward.length_2d();
-			pitch = rad2deg(atan2f(-forward.z, tmp));
-
-			if (pitch < 0)
-				pitch += 360;
+			if (angles[1] > 90.f) {
+				angles[1] -= 180.f;
+			}
+			else if (angles[1] < 90.f) {
+				angles[1] += 180.f;
+			}
+			else if (angles[1] == 90.f) {
+				angles[1] = 0.f;
+			}
 		}
 
-		angles[0] = pitch;
-		angles[1] = yaw;
-		angles[2] = 0;
+		angles[2] = 0.0f;
 	}
 
 	float VectorNormalize(vec3_t& v)
@@ -223,7 +215,7 @@ namespace math {
 		{
 			v.x = 0.0f;
 			v.y = 0.0f;
-			v.z = 0.0f;
+			v.z = 1.0f;
 		}
 
 		else
@@ -236,10 +228,20 @@ namespace math {
 
 	void AngleNormalize(vec3_t& v)
 	{
-		for (auto i = 0; i < 3; i++)
-		{
-			if (v[i] < -180.0f) v[i] += 360.0f;
-			if (v[i] > 180.0f) v[i] -= 360.0f;
+		while (v.x > 89.0f) {
+			v.x -= 180.f;
+		}
+
+		while (v.x < -89.0f) {
+			v.x += 180.f;
+		}
+
+		while (v.y > 180.f) {
+			v.y -= 360.f;
+		}
+
+		while (v.y < -180.f) {
+			v.y += 360.f;
 		}
 	}
 
@@ -254,9 +256,9 @@ namespace math {
 		if (v.x < -89.0f)
 			v.x = -89.0f;
 
-		v.y = fmodf(v.y + 180, 360) - 180;
+		v.y = fmodf(v.y + 180.f, 360.f) - 180.f;
 
-		v.z = 0;
+		v.z = 0.f;
 	}
 
 	void VectorTransform(const vec3_t& vSome, const matrix3x4_t& vMatrix, vec3_t& vOut)
@@ -274,24 +276,24 @@ namespace math {
 	{
 		float tmp, yaw, pitch;
 
-		if (direction.y == 0 && direction.x == 0)
+		if (direction.y == 0.f && direction.x == 0.f)
 		{
-			yaw = 0;
-			if (direction.z > 0)
-				pitch = 270;
+			yaw = 0.f;
+			if (direction.z > 0.f)
+				pitch = 270.f;
 			else
-				pitch = 90;
+				pitch = 90.f;
 		}
 		else
 		{
-			yaw = (atan2(direction.y, direction.x) * 180 / pi);
-			if (yaw < 0)
-				yaw += 360;
+			yaw = (atan2(direction.y, direction.x) * 180.f / pi);
+			if (yaw < 0.f)
+				yaw += 360.f;
 
 			tmp = sqrt(direction.x * direction.x + direction.y * direction.y);
-			pitch = (atan2(-direction.z, tmp) * 180 / Pi);
-			if (pitch < 0)
-				pitch += 360;
+			pitch = (atan2(-direction.z, tmp) * 180.f / pi);
+			if (pitch < 0.f)
+				pitch += 360.f;
 		}
 
 		if (pitch > 180.f)
@@ -326,23 +328,43 @@ namespace math {
 		return (to - PerpendicularPoint).length();
 	}
 
-	float GetFOV(const vec3_t& _from, const vec3_t& _to, vec3_t _dir)
-	{
-		return point_to_line(_from, _to, _dir);
-	}
-
 	float GetFOV(const vec3_t& _from, const vec3_t& _to)
 	{
-		vec3_t from = _from;
-		from -= _to;
-		from.clamp();
-		return (abs(from.y) + abs(from.x));
+		vec3_t delta = _to - _from;
+		//math::AngleNormalize(delta);
+
+		return sqrtf(powf(delta.x, 2.0f) + powf(delta.y, 2.0f));
 	}
 
 	vec3_t CalculateAimAngle(vec3_t vLocal, vec3_t vTarget)
 	{
 		vec3_t out{};
 
-		float dist2d = 
+		return out;
+	}
+
+	void CalcAngle(const vec3_t& src, const vec3_t& dst, vec3_t& angle)
+	{
+		vec3_t delta = src - dst;
+
+		math::VectorNormalize(delta);
+
+		VectorAngles(delta, angle);
+	}
+
+	vec3_t CalcAngle(const vec3_t& src, const vec3_t& dst)
+	{
+		vec3_t angle;
+		vec3_t delta = src - dst;
+
+		VectorAngles(delta, angle);
+		return angle;
+	}
+
+	float AngleDelta(const vec3_t& viewAngle, const vec3_t& tgtAngle)
+	{
+		vec3_t delta = tgtAngle - viewAngle;
+
+		return sqrt(delta.x * delta.x + delta.y * delta.y);
 	}
 }

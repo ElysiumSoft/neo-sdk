@@ -3,6 +3,11 @@
 
 namespace aimbot
 {
+	/*extern int targetAimbot;
+
+	inline matrix3x4_t BoneMatrix[MAXSTUDIOBONES];
+
+	void Run(c_cmd* cmd);*/
 
 	struct AimbotData
 	{

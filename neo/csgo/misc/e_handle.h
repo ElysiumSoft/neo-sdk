@@ -136,5 +136,5 @@ inline const c_base_handle& c_handle<T>::operator=(const T* val)
 template<class T>
 T* c_handle<T>::operator -> () const
 {
-    return set();
+    return get();
 }

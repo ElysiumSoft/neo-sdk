@@ -140,6 +140,23 @@ namespace utils {
         va_end(va);
         std::string temp = "[^r!!!^!] ";
         temp += buf;
+        temp += "\n";
+        process_colors(temp);
+        return !!WriteConsoleA(_out, temp.c_str(), static_cast<DWORD>(strlen(temp.c_str())), nullptr, nullptr);
+    }
+
+    bool error_print(const char* fmt, ...)
+    {
+        if (!_out)
+            return false;
+        char buf[1024];
+        va_list va;
+        va_start(va, fmt);
+        _vsnprintf_s(buf, 1024, fmt, va);
+        va_end(va);
+        std::string temp = "[^r!!!^!] ";
+        temp += buf;
+        temp += "\n";
         process_colors(temp);
         return !!WriteConsoleA(_out, temp.c_str(), static_cast<DWORD>(strlen(temp.c_str())), nullptr, nullptr);
     }
@@ -155,6 +172,23 @@ namespace utils {
         va_end(va);
         std::string temp = "[^gi^!] ";
         temp += buf;
+        temp += "\n";
+        process_colors(temp);
+        return !!WriteConsoleA(_out, temp.c_str(), static_cast<DWORD>(strlen(temp.c_str())), nullptr, nullptr);
+    }
+
+    bool info_print(const char* fmt, ...)
+    {
+        if (!_out)
+            return false;
+        char buf[1024];
+        va_list va;
+        va_start(va, fmt);
+        _vsnprintf_s(buf, 1024, fmt, va);
+        va_end(va);
+        std::string temp = "[^gi^!] ";
+        temp += buf;
+        temp += "\n";
         process_colors(temp);
         return !!WriteConsoleA(_out, temp.c_str(), static_cast<DWORD>(strlen(temp.c_str())), nullptr, nullptr);
     }
@@ -165,10 +199,11 @@ namespace utils {
             return false;
         char buf[1024];
         va_list va;
-        _vsnprintf_s(buf, 1024, fmt, val);
+        _vsnprintf_s(buf, 1024, fmt, va);
         va_end(va);
         std::string temp = "[^c**^!] ";
         temp += buf;
+        temp += "\n";
         return !!WriteConsoleA(_out, temp.c_str(), static_cast<DWORD>(strlen(temp.c_str())), nullptr, nullptr);
     }
 

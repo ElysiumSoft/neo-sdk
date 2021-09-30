@@ -25,7 +25,6 @@
     <ClCompile Include="neo\csgo\misc\input.cpp" />
     <ClCompile Include="neo\csgo\netvars\netvars.cpp" />
     <ClCompile Include="neo\features\aimbot.cpp" />
-    <ClCompile Include="neo\features\aimbotnew.cpp" />
     <ClCompile Include="neo\features\chams.cpp" />
     <ClCompile Include="neo\features\esp.cpp" />
     <ClCompile Include="neo\features\lag_compensation.cpp" />
@@ -38,9 +37,11 @@
     <ClCompile Include="neo\hooks\functions\lock_cursor.cpp" />
     <ClCompile Include="neo\hooks\functions\override_view.cpp" />
     <ClCompile Include="neo\hooks\functions\send_datagram.cpp" />
-    <ClCompile Include="neo\rendering\fonts.h" />
+    <ClCompile Include="neo\rendering\debugmenu.cpp" />
     <ClCompile Include="neo\rendering\imgui\imgui.cpp" />
+    <ClCompile Include="neo\rendering\imgui\imgui_demo.cpp" />
     <ClCompile Include="neo\rendering\imgui\imgui_draw.cpp" />
+    <ClCompile Include="neo\rendering\imgui\imgui_tables.cpp" />
     <ClCompile Include="neo\rendering\imgui\imgui_widgets.cpp" />
     <ClCompile Include="neo\rendering\imgui\impl\imgui_impl_dx9.cpp" />
     <ClCompile Include="neo\rendering\menu.cpp" />
@@ -83,7 +84,6 @@
     <ClInclude Include="neo\csgo\misc\base_handle.h" />
     <ClInclude Include="neo\csgo\misc\color.h" />
     <ClInclude Include="neo\csgo\misc\e_handle.h" />
-    <ClInclude Include="neo\csgo\misc\hackvars.h" />
     <ClInclude Include="neo\csgo\misc\options.h" />
     <ClInclude Include="neo\csgo\misc\input.h" />
     <ClInclude Include="neo\csgo\misc\utl_memory.h" />
@@ -94,7 +94,6 @@
     <ClInclude Include="neo\csgo\utilities\utils.h" />
     <ClInclude Include="neo\csgo\utilities\xor.h" />
     <ClInclude Include="neo\features\aimbot.h" />
-    <ClInclude Include="neo\features\aimbotnew.h" />
     <ClInclude Include="neo\features\chams.h" />
     <ClInclude Include="neo\features\esp.h" />
     <ClInclude Include="neo\features\lag_compensation.h" />
@@ -103,16 +102,19 @@
     <ClInclude Include="neo\features\prediction.h" />
     <ClInclude Include="neo\features\rcs.h" />
     <ClInclude Include="neo\hooks\hooks.h" />
-    <ClCompile Include="neo\neo.cpp">
+    <ClCompile Include="neo\ElysiumMain.cpp">
       <FileType>CppHeader</FileType>
     </ClCompile>
     <ClInclude Include="neo\hooks\steam_hook.h" />
+    <ClInclude Include="neo\rendering\debugmenu.h" />
+    <ClInclude Include="neo\rendering\imgui\imconfig.h" />
     <ClInclude Include="neo\rendering\imgui\imgui.h" />
     <ClInclude Include="neo\rendering\imgui\imgui_internal.h" />
     <ClInclude Include="neo\rendering\imgui\impl\imgui_impl_dx9.h" />
     <ClInclude Include="neo\rendering\imgui\imstb_rectpack.h" />
     <ClInclude Include="neo\rendering\imgui\imstb_textedit.h" />
     <ClInclude Include="neo\rendering\imgui\imstb_truetype.h" />
+    <ClInclude Include="neo\rendering\imgui_localextras.h" />
     <ClInclude Include="neo\rendering\menu.h" />
     <ClInclude Include="neo\rendering\render.h" />
   </ItemGroup>
@@ -122,12 +124,16 @@
     <ClCompile Include="neo\hooks\functions\create_move.cpp" />
     <ClCompile Include="neo\hooks\hooks.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{ae32ebd6-0e1f-4ee1-8abf-4725a7ca79b8}</ProjectGuid>
     <RootNamespace>neosdk</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>ElysiumHaxx</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

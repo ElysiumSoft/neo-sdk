@@ -33,7 +33,11 @@ namespace math {
     vec3_t DirectionToAngle(vec3_t direction);
     float Distance(const vec3_t& a, const vec3_t& b);
     float point_to_line(vec3_t from, vec3_t to, vec3_t dir);
-    float GetFOV(const vec3_t& _from, const vec3_t& _To, vec3_t dir);
     float GetFOV(const vec3_t& _from, const vec3_t& _to);
     vec3_t CalculateAimAngle(vec3_t vLocal, vec3_t vTarget);
+    void CalcAngle(const vec3_t& src, const vec3_t& dst, vec3_t& angle);
+    vec3_t CalcAngle(const vec3_t& src, const vec3_t& dst);
+    float AngleDelta(const vec3_t& viewAngle, const vec3_t& tgtAngle);
+    float Distance2d(const vec3_t& a, const vec3_t& b);
+    float Distance3d(const vec3_t& a, const vec3_t& b);
 }

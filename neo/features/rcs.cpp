@@ -4,10 +4,17 @@
 vec3_t oldPunch = { 0,0,0 };
 int oldShotsFired = 0;
 
-void rcs::Run()
+/// <summary>
+/// Called once per <code>CreateMove()</code> call (hooked)
+/// </summary>
+/// <param name="cmd">Pointer to the c_cmd object passed through the CreateMove function</param>
+void rcs::Run(c_cmd* cmd)
 {
 
 	if (!options::rcs::anti_recoil)
+		return;
+
+	if (!(GetAsyncKeyState(VK_LBUTTON) & 0x8000))
 		return;
 
 	/* =~=[ !!!!NEED TO FIX c_handle<base_weapon> FUNC!!!! ]=~= */
@@ -29,30 +36,52 @@ void rcs::Run()
 
 	int shotsFired = localPlayer->shots_fired();
 
-	if (shotsFired >= 1)
+	vec3_t currentPunch = localPlayer->aim_punch();
+
+	if (shotsFired > 1)
 	{
-		if (shotsFired != oldShotsFired)
-		{
-			vec3_t aimPunchAngle = localPlayer->aim_punch();
-			vec3_t viewAngle = csgo::client_s->viewangles;
-			vec3_t rcsAngle{};
-			rcsAngle.y = viewAngle.y + (oldPunch.y - aimPunchAngle.y * 2.f);
-			rcsAngle.x = viewAngle.x + (oldPunch.x - aimPunchAngle.x * 2.f);
+		vec3_t newPunch = { currentPunch.x - oldPunch.x, currentPunch.y - currentPunch.y, 0.f };
 
-			viewAngle.normalize_in_place();
+		vec3_t viewAngle = cmd->view_angles;
 
-			oldPunch.y = aimPunchAngle.y * 2.f;
-			oldPunch.x = aimPunchAngle.x * 2.f;
-			
-			csgo::engine->SetViewAngles(&rcsAngle);
-			oldShotsFired = shotsFired;
+		viewAngle.x -= newPunch.x * 2.0f;
+		viewAngle.y -= newPunch.y * 2.0f;
 
-		}
+		math::ClampAngles(viewAngle);
+		csgo::engine->SetViewAngles(&viewAngle);
+		oldShotsFired = shotsFired;
+		oldPunch = currentPunch;
 	}
 	else
 	{
-		oldPunch = { 0,0,0 };
+		oldPunch = { 0.f, 0.f, 0.f };
 		oldShotsFired = 0;
 	}
+
+	//if (shotsFired > 1)
+	//{
+	//	if (shotsFired != oldShotsFired)
+	//	{
+	//		vec3_t aimPunchAngle = localPlayer->aim_punch();
+	//		vec3_t viewAngle = cmd->view_angles;
+	//		vec3_t rcsAngle{};
+	//		rcsAngle.y = (viewAngle.y + oldPunch.y) - (aimPunchAngle.y * 2.f);
+	//		rcsAngle.x = (viewAngle.x + oldPunch.x) - (aimPunchAngle.x * 2.f);
+
+	//		//math::AngleNormalize(rcsAngle);
+
+	//		oldPunch.y = aimPunchAngle.y * 2.f;
+	//		oldPunch.x = aimPunchAngle.x * 2.f;
+	//		
+	//		csgo::engine->SetViewAngles(&rcsAngle);
+	//		oldShotsFired = shotsFired;
+
+	//	}
+	//}
+	//else
+	//{
+	//	oldPunch = { 0,0,0 };
+	//	oldShotsFired = 0;
+	//}
 
 }

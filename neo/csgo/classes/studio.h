@@ -87,6 +87,23 @@ enum Hitboxes
     HITBOX_MAX
 };
 
+enum BONES
+{
+    BONE_NECK = 7,
+    BONE_HEAD = 8,
+    BONE_UPPERSPINE = 6,
+    BONE_MIDSPINE = 5,
+    BONE_LOWSPINE = 4,
+    BONE_LHAND = 13,
+    BONE_RHAND = 43,
+    BONE_LEFTKNEE = 71,
+    BONE_RIGHTKNEE = 78,
+    BONE_LEFTFOOT = 72,
+    BONE_RIGHTFOOT = 79,
+    BONE_ASS = 0,
+    BONE_LEFTELBOW = 12,
+    BONE_RIGHTELBOW = 41
+};
 
 typedef unsigned short MDLHandle_t;
 

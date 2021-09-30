@@ -11,6 +11,8 @@
         return *(type*)((uintptr_t)this + _##name);                 \
     }
 
+
+
 enum entity_flags
 {
 	fl_onground = (1 << 0),
@@ -188,6 +190,7 @@ public:
 	netvar(int, weapon_world_model, xor ("DT_BaseCombatWeapon"), xor ("m_iWeaponWorldModel"));
 	netvar(int, clip, xor ("DT_BaseCombatWeapon"), xor ("m_iClip1"));
 	netvar(int, primary_reserve_ammo, xor ("DT_BaseCombatWeapon"), xor ("m_iPrimaryReserveAmmoCount"));
+	
 
 	int weapon_index = item_definition_index();
 
@@ -412,7 +415,9 @@ public:
 	netvar(unsigned, modelIndex, xor ("DT_BaseEntity"), xor ("m_nModelIndex"));
 	netvar(int, health, xor ("DT_BasePlayer"), xor ("m_iHealth"));
 	netvar(c_handle <base_weapon>, active_weapon, xor ("DT_BaseCombatCharacter"), xor ("m_hActiveWeapon"));
-	
+	netvar(int, item_name, xor ("DT_BaseEntity"), xor ("m_iName"));
+	netvar(bool, autoaim_target, xor ("DT_BaseEntity"), xor ("m_bIsAutoaimTarget"));
+
 	bool is_alive()
 	{
 		return health() > 0;
@@ -442,6 +447,7 @@ public:
 	netvar(bool, tick_base, xor ("DT_BasePlayer"), xor ("m_nTickBase"));
 	netvar(int32_t, m_flags, ("DT_BasePlayer"), ("m_fFlags"));
 	netvar(vec3_t, vec_origin, xor ("DT_BaseEntity"), xor ("m_vecOrigin"));
+	netvar(vec3_t, aim_punch, xor ("DT_BasePlayer"), xor ("m_aimPunchAngle"));
 	netvar(float, sim_time, xor ("DT_BaseEntity"), xor ("m_flSimulationTime"));
 	netvar(int32_t, hitbox_set, xor ("DT_BaseAnimating"), xor ("m_nHitboxSet"));
 	netvar(c_handle<base_weapon>, active_weapon, xor ("DT_BaseCombatCharacter"), xor ("m_hActiveWeapon"));
@@ -450,11 +456,15 @@ public:
 	netvar(int, shots_fired, xor ("DT_CSPlayer"), xor ("m_iShotsFired"));
 	netvar(int, account_cash, xor ("DT_CSPlayer"), xor ("m_iAccount"));
 	netvar(bool, has_defuser, xor ("DT_CSPlayer"), xor ("m_bHasDefuser"));
-	netvar(vec3_t, aim_punch, xor ("DT_BasePlayer"), xor ("m_aimPunchAngle"));
-	netvar(vec3_t, vec_velocity, xor ("DT_BasePlayer"), xor ("m_secVelocity[0]"));
+	netvar(vec3_t, vec_velocity, xor ("DT_BasePlayer"), xor ("m_vecVelocity[0]"));
 	netvar(int, armor, xor ("DT_CSPlayer"), xor ("m_armorValue"));
 	netvar(char*, last_place_name, xor ("DT_BasePlayer"), xor ("m_szLastPlaceName"));
 	
+	vec3_t& aim_punch_angle()
+	{
+		//static auto aimpunchoffset = netvars.get_offset(xor ("DT_BasePlayer"), xor ("m_aimPunchAngle"));
+		return *(vec3_t*)((uintptr_t)this + 0x303C);
+	}
 	
 	bool is_alive()
 	{

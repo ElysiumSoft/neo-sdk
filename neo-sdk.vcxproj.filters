@@ -16,22 +16,23 @@
     <ClCompile Include="neo\hooks\functions\lock_cursor.cpp" />
     <ClCompile Include="neo\hooks\functions\override_view.cpp" />
     <ClCompile Include="neo\hooks\functions\send_datagram.cpp" />
-    <ClCompile Include="neo\rendering\imgui\imgui.cpp" />
-    <ClCompile Include="neo\rendering\imgui\imgui_draw.cpp" />
-    <ClCompile Include="neo\rendering\imgui\imgui_widgets.cpp" />
-    <ClCompile Include="neo\rendering\imgui\impl\imgui_impl_dx9.cpp" />
-    <ClCompile Include="neo\rendering\menu.cpp" />
-    <ClCompile Include="neo\rendering\render.cpp" />
-    <ClCompile Include="neo\neo.cpp" />
+    <ClCompile Include="neo\ElysiumMain.cpp" />
     <ClCompile Include="neo\csgo\utilities\utils.cpp" />
     <ClCompile Include="neo\features\movement.cpp" />
     <ClCompile Include="neo\hooks\functions\create_move.cpp" />
     <ClCompile Include="neo\hooks\hooks.cpp" />
     <ClCompile Include="neo\features\misc.cpp" />
-    <ClCompile Include="neo\rendering\fonts.h" />
     <ClCompile Include="neo\features\aimbot.cpp" />
     <ClCompile Include="neo\features\rcs.cpp" />
-    <ClCompile Include="neo\features\aimbotnew.cpp" />
+    <ClCompile Include="neo\rendering\imgui\imgui.cpp" />
+    <ClCompile Include="neo\rendering\imgui\imgui_demo.cpp" />
+    <ClCompile Include="neo\rendering\imgui\imgui_draw.cpp" />
+    <ClCompile Include="neo\rendering\imgui\imgui_tables.cpp" />
+    <ClCompile Include="neo\rendering\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="neo\rendering\imgui\impl\imgui_impl_dx9.cpp" />
+    <ClCompile Include="neo\rendering\menu.cpp" />
+    <ClCompile Include="neo\rendering\render.cpp" />
+    <ClCompile Include="neo\rendering\debugmenu.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="neo\buildtype.h" />
@@ -87,6 +88,11 @@
     <ClInclude Include="neo\features\prediction.h" />
     <ClInclude Include="neo\hooks\hooks.h" />
     <ClInclude Include="neo\hooks\steam_hook.h" />
+    <ClInclude Include="neo\features\misc.h" />
+    <ClInclude Include="neo\features\aimbot.h" />
+    <ClInclude Include="neo\features\rcs.h" />
+    <ClInclude Include="neo\csgo\math\qangle.h" />
+    <ClInclude Include="neo\rendering\imgui\imconfig.h" />
     <ClInclude Include="neo\rendering\imgui\imgui.h" />
     <ClInclude Include="neo\rendering\imgui\imgui_internal.h" />
     <ClInclude Include="neo\rendering\imgui\impl\imgui_impl_dx9.h" />
@@ -95,9 +101,10 @@
     <ClInclude Include="neo\rendering\imgui\imstb_truetype.h" />
     <ClInclude Include="neo\rendering\menu.h" />
     <ClInclude Include="neo\rendering\render.h" />
-    <ClInclude Include="neo\features\misc.h" />
-    <ClInclude Include="neo\features\aimbot.h" />
-    <ClInclude Include="neo\features\rcs.h" />
-    <ClInclude Include="neo\features\aimbotnew.h" />
+    <ClInclude Include="neo\rendering\debugmenu.h" />
+    <ClInclude Include="neo\rendering\imgui_localextras.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
   </ItemGroup>
 </Project>

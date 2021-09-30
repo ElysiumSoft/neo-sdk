@@ -3,18 +3,23 @@
 #include <string>
 #include <d3d9.h>
 #include <d3dx9.h>
-#pragma comment(lib, "d3d9.lib")
-#pragma comment(lib, "d3dx9.lib")
 #include "imgui/imgui.h"
-#define IMGUI_DEFINE_MATH_OPERATORS
+#define IMGUI_DEFINE_MATH_OPERATIONS
 #include "imgui/imgui_internal.h"
 #define IM_USE using namespace ImGui;
 
-namespace menu {
+namespace debugmenu
+{
+
 	static bool _visible;
 	static ImGuiStyle style;
+	
 	void init();
 	void render();
 	void toggle();
 	bool is_visible();
+
+	void dumper();
+
 }
+
